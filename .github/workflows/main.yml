@@ -2,8 +2,8 @@ name: Generate 3D Contribution Graph
 
 on:
   schedule:
-    - cron: "0 0 * * *"  # auto update tiap tengah malam UTC
-  workflow_dispatch:     # bisa dijalankan manual juga
+    - cron: "0 0 * * *"   # update setiap tengah malam UTC
+  workflow_dispatch:
 
 jobs:
   build:
@@ -19,11 +19,13 @@ jobs:
           node-version: '18'
 
       - name: Install dependencies
+        working-directory: ./packages/profile-3d-contrib
         run: npm install
 
       - name: Generate 3D Contribution Graph
+        working-directory: ./packages/profile-3d-contrib
         run: |
-          node src/index.js --username AZAGAND --theme tailwind --output-file profile-tailwind.svg
+          npm start -- --username AZAGAND --theme tailwind --output-file ../../../profile-tailwind.svg
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
