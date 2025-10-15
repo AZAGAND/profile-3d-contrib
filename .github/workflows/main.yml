@@ -2,7 +2,7 @@ name: Generate 3D Contribution Graph
 
 on:
   schedule:
-    - cron: "0 0 * * *"  # update setiap tengah malam UTC
+    - cron: "0 0 * * *"  # auto update tiap tengah malam UTC
   workflow_dispatch:     # bisa dijalankan manual juga
 
 jobs:
@@ -13,18 +13,24 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Generate 3D Contribution Graph
-        uses: yoshi389111/github-profile-3d-contrib@0.7.0
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          username: AZAGAND
-          theme: tailwind  # opsi: dark, night_rainbow, matrix, tailwind, github
-          output_file: profile-tailwind.svg
-          include_private: true
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Generate 3D Contribution Graph
+        run: |
+          node src/index.js --username AZAGAND --theme tailwind --output-file profile-tailwind.svg
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Commit & Push
         run: |
           git config --local user.name "github-actions[bot]"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git add .
-          git commit -m "Update 3D Contribution Graph" || echo "No changes to commit"
+          git commit -m "🧊 Update 3D Contribution Graph" || echo "No changes to commit"
           git push
